@@ -25,6 +25,7 @@ const RecipeCreator = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [hoveredDelete, setHoveredDelete] = useState(null);
   const navigate = useNavigate();
 
   const handleMouseEnter = (index) => {
@@ -33,6 +34,14 @@ const RecipeCreator = () => {
 
   const handleMouseLeave = () => {
     setHoveredItem(null);
+  };
+
+  const handleDeleteMouseEnter = (index, type) => {
+    setHoveredDelete(`${type}-${index}`);
+  };
+
+  const handleDeleteMouseLeave = () => {
+    setHoveredDelete(null);
   };
 
   const styles = {
@@ -81,12 +90,15 @@ const RecipeCreator = () => {
     },
     input: {
       width: "98%",
+      alignItems: "center",
       padding: "0.6rem",
       borderRadius: "5px",
       border: "none",
       backgroundColor: "#4e525e",
       color: "#f1f1f1",
-      marginBottom: "0.5rem",
+      marginTop: "0.3rem",
+      marginBottom: "0.3rem",
+    
     },
     textarea: {
       width: "98%",
@@ -103,7 +115,7 @@ const RecipeCreator = () => {
       fontSize: "1rem",
       fontWeight: "bold",
       fontFamily: "Courier New",
-      backgroundColor:"#fbb540",
+      backgroundColor: "#fbb540",
       color: "#3c2f2f",
       border: "none",
       borderRadius: "10px",
@@ -133,6 +145,11 @@ const RecipeCreator = () => {
       transition: "background-color 0.3s ease, transform 0.2s ease",
       backgroundColor: "#ea9d2d",
     },
+    hoveredDeleteButton: {
+      transform: "translateY(-3px)",
+      transition: "background-color 0.3s ease, transform 0.2s ease",
+      backgroundColor: "#a81f2a",
+    },
     stepItem: {
       display: "flex",
       alignItems: "center",
@@ -142,6 +159,7 @@ const RecipeCreator = () => {
     ingredientItem: {
       display: "flex",
       gap: "0.5rem",
+      alignItems: "center",
     },
     tagItem: {
       display: "inline-block",
@@ -250,6 +268,11 @@ const RecipeCreator = () => {
       cursor: "pointer",
       whiteSpace: "nowrap",
     },
+    deleteButton: {
+      padding: "0.4rem 0.8rem",
+      fontSize: "0.8rem",
+      height: "fit-content",
+    },
   };
 
   const handleInputChange = (e) => {
@@ -332,7 +355,7 @@ const RecipeCreator = () => {
     try {
       const storageRef = ref(
         storage,
-        `images/${uid}/recipes/${formData.name}}`
+        `images/${uid}/recipes/${formData.name}`
       );
       const uploadTask = uploadBytes(storageRef, file);
 
@@ -497,7 +520,14 @@ const RecipeCreator = () => {
                     <button
                       type="button"
                       onClick={() => removeStep(index)}
-                      style={{ ...styles.buttonStyle, ...styles.cancelButton }}
+                      style={{ 
+                        ...styles.buttonStyle, 
+                        ...styles.cancelButton,
+                        ...styles.deleteButton,
+                        ...(hoveredDelete === `step-${index}` ? styles.hoveredDeleteButton : {})
+                      }}
+                      onMouseEnter={() => handleDeleteMouseEnter(index, 'step')}
+                      onMouseLeave={handleDeleteMouseLeave}
                     >
                       Eliminar
                     </button>
@@ -530,7 +560,7 @@ const RecipeCreator = () => {
                       handleIngredientChange(index, "name", e.target.value)
                     }
                     required={index === 0}
-                    style={styles.input}
+                    style={{ ...styles.input, flex: 2 }}
                   />
                   <input
                     type="text"
@@ -540,7 +570,7 @@ const RecipeCreator = () => {
                       handleIngredientChange(index, "quantity", e.target.value)
                     }
                     required={index === 0}
-                    style={styles.input}
+                    style={{ ...styles.input, flex: 1 }}
                   />
                   <input
                     type="text"
@@ -549,13 +579,20 @@ const RecipeCreator = () => {
                     onChange={(e) =>
                       handleIngredientChange(index, "type", e.target.value)
                     }
-                    style={styles.input}
+                    style={{ ...styles.input, flex: 1 }}
                   />
                   {formData.ingredients.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeIngredient(index)}
-                      style={{ ...styles.buttonStyle, ...styles.cancelButton }}
+                      style={{ 
+                        ...styles.buttonStyle, 
+                        ...styles.cancelButton,
+                        ...styles.deleteButton,
+                        ...(hoveredDelete === `ingredient-${index}` ? styles.hoveredDeleteButton : {})
+                      }}
+                      onMouseEnter={() => handleDeleteMouseEnter(index, 'ingredient')}
+                      onMouseLeave={handleDeleteMouseLeave}
                     >
                       Eliminar
                     </button>
@@ -566,7 +603,7 @@ const RecipeCreator = () => {
                 <button
                   type="button"
                   onClick={addIngredient}
-                  style={{ ...styles.button, ...(hoveredItem === 1 ? styles.hoveredButton : {}) }}
+                  style={{ ...styles.button, ...(hoveredItem === 1 ? styles.hoveredButton : {}), marginTop: "0.8rem" }}
                   onMouseEnter={() => handleMouseEnter(1)}
                   onMouseLeave={handleMouseLeave}
                 >
