@@ -1,7 +1,10 @@
 import { addDoc, collection } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { auth, db, storage } from "../firebase/firebase";
+import defaultDish from "./../static/dish.png";
+import editPhoto from "./../static/edit.png";
 import Navbar from "./Navbar";
 
 const RecipeCreator = () => {
@@ -18,15 +21,16 @@ const RecipeCreator = () => {
   const [tagInput, setTagInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [buttonHover, setButtonHover] = useState(false);
   const [recipeImage, setRecipeImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [hover, setHover] = useState(false);
+  const navigate = useNavigate();
 
   const styles = {
     container: {
       backgroundColor: "#282c34",
-      color: "#ffffff",
+      color: "#f1f1f1",
       padding: "2rem",
       paddingTop: "2rem",
       textAlign: "center",
@@ -48,6 +52,20 @@ const RecipeCreator = () => {
     formGroup: {
       marginBottom: "1.5rem",
     },
+    formRow: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "1.5rem",
+    },
+    formTitle: {
+      fontWeight: "bold",
+      flex: "1",
+    },
+    formActions: {
+      display: "flex",
+      gap: "0.5rem",
+    },
     label: {
       display: "block",
       marginBottom: "0.5rem",
@@ -59,7 +77,7 @@ const RecipeCreator = () => {
       borderRadius: "5px",
       border: "none",
       backgroundColor: "#4e525e",
-      color: "#ffffff",
+      color: "#f1f1f1",
       marginBottom: "0.5rem",
     },
     textarea: {
@@ -68,43 +86,46 @@ const RecipeCreator = () => {
       borderRadius: "5px",
       border: "none",
       backgroundColor: "#4e525e",
-      color: "#ffffff",
-      minHeight: "80px",
+      color: "#f1f1f1",
+      minHeight: "50px",
       resize: "vertical",
     },
-    button: {
+    buttonStyle: {
       padding: "0.6rem 1.2rem",
       fontSize: "1rem",
       fontWeight: "bold",
-      backgroundColor: buttonHover ? "#ea9d2d" : "#fbb540",
+      fontFamily: "Courier New",
+      backgroundColor: hover ? "#ea9d2d" : "#fbb540",
       color: "#3c2f2f",
       border: "none",
       borderRadius: "10px",
       cursor: "pointer",
       transition: "background-color 0.3s ease, transform 0.2s ease",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-      transform: buttonHover ? "translateY(-3px)" : "translateY(0)",
-      margin: "1rem 0",
+      transform: hover ? "translateY(-3px)" : "translateY(0)",
     },
-    smallButton: {
-      padding: "0.3rem 0.6rem",
-      fontSize: "0.8rem",
-      marginLeft: "0.5rem",
-    },
-    successMessage: {
-      color: "#4caf50",
-      textAlign: "center",
-      margin: "1rem 0",
+    button: {
+      padding: "0.5rem 0.5rem",
+      fontSize: "0.9rem",
+      fontWeight: "bold",
+      fontFamily: "Courier New",
+      backgroundColor: hover ? "#fbb540" : "#fbb540",
+      color: "#3c2f2f",
+      border: "none",
+      borderRadius: "10px",
+      cursor: "pointer",
+      transition: "background-color 0.3s ease, transform 0.2s ease",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      transform: hover ? "translateY(-3px)" : "translateY(0)",
     },
     stepItem: {
       display: "flex",
       alignItems: "center",
-      marginBottom: "0.5rem",
+      marginBottom: "0.75rem",
     },
     ingredientItem: {
       display: "flex",
       gap: "0.5rem",
-      marginBottom: "0.5rem",
     },
     tagItem: {
       display: "inline-block",
@@ -113,7 +134,8 @@ const RecipeCreator = () => {
       padding: "0.3rem 0.6rem",
       borderRadius: "15px",
       margin: "0.3rem",
-      fontSize: "0.8rem",
+      fontSize: "0.9rem",
+      fontWeight: "bold",
     },
     tagRemove: {
       marginLeft: "0.3rem",
@@ -122,6 +144,7 @@ const RecipeCreator = () => {
     },
     requiredStar: {
       color: "red",
+      fontSize: "1.2rem",
     },
     imageContainer: {
       height: "200px",
@@ -141,6 +164,18 @@ const RecipeCreator = () => {
       objectFit: "cover",
       borderRadius: "8px",
     },
+    editImage: {
+      height: "250px",
+      objectFit: "cover",
+      cursor: "pointer",
+    },
+    editImageButton: {
+      height: "70px",
+      position: "absolute",
+      bottom: "5px",
+      right: "5px",
+      cursor: "pointer",
+    },
     uploadLabel: {
       display: "block",
       marginBottom: "0.5rem",
@@ -158,6 +193,47 @@ const RecipeCreator = () => {
       backgroundColor: "#4CAF50",
       borderRadius: "5px",
       width: `${uploadProgress}%`,
+    },
+    formInputGroup: {
+      display: "flex",
+      gap: "0.5rem",
+      width: "100%", // Asegura que ocupe todo el ancho disponible
+    },
+    formInput: {
+      flex: "1", // Hace que el input ocupe todo el espacio disponible
+      padding: "0.6rem",
+      borderRadius: "5px",
+      border: "none",
+      backgroundColor: "#4e525e",
+      color: "#f1f1f1",
+      marginBottom: "0.5rem",
+    },
+    tagInputContainer: {
+      display: "flex",
+      gap: "0.5rem",
+      width: "100%",
+      alignItems: "center", // Alinea verticalmente los elementos
+    },
+    tagInput: {
+      flex: "1",
+      padding: "0.6rem",
+      borderRadius: "5px",
+      border: "none",
+      backgroundColor: "#4e525e",
+      color: "#f1f1f1",
+    },
+    // Modifica el estilo del botón para etiquetas para que sea consistente
+    tagButton: {
+      padding: "0.6rem 1rem",
+      fontSize: "0.9rem",
+      fontWeight: "bold",
+      fontFamily: "Courier New",
+      backgroundColor: "#fbb540",
+      color: "#3c2f2f",
+      border: "none",
+      borderRadius: "10px",
+      cursor: "pointer",
+      whiteSpace: "nowrap", // Evita que el texto del botón se divida en varias líneas
     },
   };
 
@@ -239,7 +315,10 @@ const RecipeCreator = () => {
 
   const uploadImage = async (file, uid) => {
     try {
-      const storageRef = ref(storage, `images/${uid}/recipes/${formData.name}}`);
+      const storageRef = ref(
+        storage,
+        `images/${uid}/recipes/${formData.name}}`
+      );
       const uploadTask = uploadBytes(storageRef, file);
 
       const interval = setInterval(() => {
@@ -325,6 +404,7 @@ const RecipeCreator = () => {
       setRecipeImage(null);
       setImagePreview(null);
       setUploadProgress(0);
+      navigate("/recipes", { state: { showRecipeCreationSuccess: true } });
     } catch (error) {
       console.error("Error al crear la receta:", error);
       alert("Hubo un error al crear la receta. Por favor, intenta nuevamente.");
@@ -337,22 +417,19 @@ const RecipeCreator = () => {
     <div>
       <Navbar />
       <div style={styles.container}>
-        <h2 style={styles.title}>Crear Nueva Receta</h2>
+        <h2 style={styles.title}>Crear nueva receta</h2>
         <div style={styles.formContainer}>
-          {submitSuccess && (
-            <div style={styles.successMessage}>
-              ¡Receta creada exitosamente!
-            </div>
-          )}
           <form onSubmit={handleSubmit}>
             <div style={styles.formGroup}>
               <label style={styles.label}>
-                Nombre de la Receta<span style={styles.requiredStar}>*</span>
+                Nombre<span style={styles.requiredStar}>*</span>
               </label>
               <input
                 type="text"
                 name="name"
+                className="input-placeholder"
                 value={formData.name}
+                placeholder="Nombre de la receta"
                 onChange={handleInputChange}
                 required
                 style={styles.input}
@@ -364,20 +441,24 @@ const RecipeCreator = () => {
               </label>
               <textarea
                 name="description"
+                className="input-placeholder"
                 value={formData.description}
+                placeholder="Descripción de la receta"
                 onChange={handleInputChange}
                 required
                 style={styles.textarea}
               />
             </div>
             <div style={styles.formGroup}>
-              <label style={styles.label}>
+              <label style={{ ...styles.label, ...styles.formTitle }}>
                 Duración (minutos)<span style={styles.requiredStar}>*</span>
               </label>
               <input
                 type="number"
                 name="duration"
+                className="input-placeholder"
                 value={formData.duration}
+                placeholder="Duración en minutos"
                 onChange={handleInputChange}
                 min="1"
                 required
@@ -385,42 +466,8 @@ const RecipeCreator = () => {
               />
             </div>
             <div style={styles.formGroup}>
-              <label style={styles.uploadLabel}>Imagen de la Receta</label>
-              <label htmlFor="recipeImage" style={styles.imageContainer}>
-                {imagePreview ? (
-                  <img 
-                    src={imagePreview} 
-                    alt="Vista previa" 
-                    style={styles.imagePreview} 
-                  />
-                ) : (
-                  <span>Haz clic para seleccionar una imagen</span>
-                )}
-              </label>
-              <input
-                id="recipeImage"
-                type="file"
-                accept="image/jpeg, image/png, image/jpg"
-                onChange={handleImageChange}
-                style={{ display: "none" }}
-              />
-              {uploadProgress > 0 && uploadProgress < 100 && (
-                <div style={styles.progressBar}>
-                  <div style={styles.progressFill}></div>
-                </div>
-              )}
-              <input
-                type="url"
-                name="photoURL"
-                value={formData.photoURL}
-                onChange={handleInputChange}
-                placeholder="O ingresa una URL de imagen"
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>
-                Pasos de Preparación<span style={styles.requiredStar}>*</span>
+              <label style={{ ...styles.label, ...styles.formTitle }}>
+                Pasos de preparación<span style={styles.requiredStar}>*</span>
               </label>
               {formData.steps.map((step, index) => (
                 <div key={index} style={styles.stepItem}>
@@ -435,23 +482,25 @@ const RecipeCreator = () => {
                     <button
                       type="button"
                       onClick={() => removeStep(index)}
-                      style={{ ...styles.button, ...styles.smallButton }}
+                      style={{ ...styles.button }}
                     >
                       Eliminar
                     </button>
                   )}
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={addStep}
-                style={{ ...styles.button, ...styles.smallButton }}
-              >
-                Añadir Paso
-              </button>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button
+                  type="button"
+                  onClick={addStep}
+                  style={{ ...styles.button }}
+                >
+                  Añadir paso
+                </button>
+              </div>
             </div>
             <div style={styles.formGroup}>
-              <label style={styles.label}>
+              <label style={{ ...styles.label, ...styles.formTitle }}>
                 Ingredientes<span style={styles.requiredStar}>*</span>
               </label>
               {formData.ingredients.map((ingredient, index) => (
@@ -489,40 +538,45 @@ const RecipeCreator = () => {
                     <button
                       type="button"
                       onClick={() => removeIngredient(index)}
-                      style={{ ...styles.button, ...styles.smallButton }}
+                      style={{ ...styles.button }}
                     >
                       Eliminar
                     </button>
                   )}
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={addIngredient}
-                style={{ ...styles.button, ...styles.smallButton }}
-              >
-                Añadir Ingrediente
-              </button>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button
+                  type="button"
+                  onClick={addIngredient}
+                  style={{ ...styles.button }}
+                >
+                  Añadir ingrediente
+                </button>
+              </div>
             </div>
+
             <div style={styles.formGroup}>
-              <label style={styles.label}>Etiquetas (Tags)</label>
-              <div style={{ display: "flex", marginBottom: "0.5rem" }}>
+              <label style={{ ...styles.label, ...styles.formTitle }}>
+                Etiquetas (Tags)
+              </label>
+              <div style={styles.tagInputContainer}>
                 <input
                   type="text"
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   placeholder="Añadir etiqueta"
-                  onKeyPress={(e) =>
+                  onKeyUp={(e) =>
                     e.key === "Enter" && (e.preventDefault(), handleTagAdd())
                   }
-                  style={styles.input}
+                  style={styles.tagInput}
                 />
                 <button
                   type="button"
                   onClick={handleTagAdd}
-                  style={{ ...styles.button, ...styles.smallButton }}
+                  style={styles.tagButton}
                 >
-                  Añadir
+                  Añadir etiqueta
                 </button>
               </div>
               <div>
@@ -539,16 +593,44 @@ const RecipeCreator = () => {
                 ))}
               </div>
             </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              style={styles.button}
-              onMouseEnter={() => setButtonHover(true)}
-              onMouseLeave={() => setButtonHover(false)}
-            >
-              {isSubmitting ? "Creando Receta..." : "Crear Receta"}
-            </button>
+            <div style={{ ...styles.formGroup, paddingTop: "1rem" }}>
+              <label style={styles.uploadLabel}>Imagen</label>
+              <div style={styles.imageContainer}>
+                <label htmlFor="profileImage">
+                  <img
+                    src={imagePreview ? imagePreview : defaultDish}
+                    alt="Foto de perfil"
+                    style={styles.imagePreview}
+                  />
+                  <img
+                    src={editPhoto}
+                    alt="Foto de perfil"
+                    style={styles.editImageButton}
+                  />
+                </label>
+              </div>
+              <input
+                id="recipeImage"
+                type="file"
+                accept="image/jpeg, image/png, image/jpg"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+              />
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <div style={styles.progressBar}>
+                  <div style={styles.progressFill}></div>
+                </div>
+              )}
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                style={{ ...styles.buttonStyle }}
+              >
+                {isSubmitting ? "Creando receta..." : "Crear receta"}
+              </button>
+            </div>
           </form>
         </div>
       </div>

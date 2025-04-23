@@ -8,7 +8,7 @@ body {
   background-color: #282c34;
 }
 
-code, h1, h2, h3, h4 {
+code, h1, h2, h3, h4, input, text, textarea {
   font-family: 
     'Courier New', 'Roboto', 'Ubuntu';
 }

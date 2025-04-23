@@ -21,3 +21,13 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
+input::placeholder,
+textarea::placeholder {
+  color: #a0a0a0;
+  opacity: 1;
+  font-style: italic;
+  transition: opacity 0.3s ease;
+  font-size: 0.9rem;
+}
+
