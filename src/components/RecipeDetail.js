@@ -22,7 +22,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       flexDirection: 'column'
     },
     container: {
-      color: '#ffffff',
+      color: '#f1f1f1',
       padding: '2rem',
       maxWidth: '1000px',
       margin: '0 auto',

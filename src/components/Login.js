@@ -71,7 +71,7 @@ function Login() {
 
   const containerStyle = {
     backgroundColor: '#282c34',
-    color: '#ffffff',
+    color: '#f1f1f1',
     textAlign: 'center',
     paddingTop: '5rem'
   };

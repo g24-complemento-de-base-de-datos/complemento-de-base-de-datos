@@ -168,7 +168,7 @@ function Login() {
 
   const styles = {
     container: {  
-      color: "#ffffff",
+      color: "#f1f1f1",
       textAlign: "center",
       paddingTop: "5rem",
       width: "100%",
