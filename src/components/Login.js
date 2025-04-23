@@ -46,7 +46,7 @@ function Login() {
       }
 
       console.log('Usuario autenticado:', user);
-      navigate('/');
+      navigate("/", { state: { showLoginSuccess: true } });
     } catch (error) {
       console.error('Error al iniciar sesión con Google:', error);
     }
