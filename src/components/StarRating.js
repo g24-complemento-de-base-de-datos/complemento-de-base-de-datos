@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const StarRating = ({ rating, max = 5 }) => {
-  const filledStars = Math.round(rating); // Puedes usar Math.floor si prefieres ser más estricto
+  const filledStars = Math.round(rating);
 
   return (
     <div style={{ display: 'flex', gap: '4px' }}>

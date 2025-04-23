@@ -24,8 +24,16 @@ const RecipeCreator = () => {
   const [recipeImage, setRecipeImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [hover, setHover] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
   const navigate = useNavigate();
+
+  const handleMouseEnter = (index) => {
+    setHoveredItem(index);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredItem(null);
+  };
 
   const styles = {
     container: {
@@ -95,33 +103,41 @@ const RecipeCreator = () => {
       fontSize: "1rem",
       fontWeight: "bold",
       fontFamily: "Courier New",
-      backgroundColor: hover ? "#ea9d2d" : "#fbb540",
+      backgroundColor:"#fbb540",
       color: "#3c2f2f",
       border: "none",
       borderRadius: "10px",
       cursor: "pointer",
-      transition: "background-color 0.3s ease, transform 0.2s ease",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-      transform: hover ? "translateY(-3px)" : "translateY(0)",
     },
     button: {
       padding: "0.5rem 0.5rem",
       fontSize: "0.9rem",
       fontWeight: "bold",
       fontFamily: "Courier New",
-      backgroundColor: hover ? "#fbb540" : "#fbb540",
+      backgroundColor: "#fbb540",
       color: "#3c2f2f",
       border: "none",
       borderRadius: "10px",
       cursor: "pointer",
-      transition: "background-color 0.3s ease, transform 0.2s ease",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-      transform: hover ? "translateY(-3px)" : "translateY(0)",
+    },
+    cancelButton: {
+      fontSize: "0.9rem",
+      padding: "0.5rem 0.5rem",
+      backgroundColor: "#d12a37",
+      color: "white",
+    },
+    hoveredButton: {
+      transform: "translateY(-3px)",
+      transition: "background-color 0.3s ease, transform 0.2s ease",
+      backgroundColor: "#ea9d2d",
     },
     stepItem: {
       display: "flex",
       alignItems: "center",
       marginBottom: "0.75rem",
+      gap: "0.5rem",
     },
     ingredientItem: {
       display: "flex",
@@ -197,10 +213,10 @@ const RecipeCreator = () => {
     formInputGroup: {
       display: "flex",
       gap: "0.5rem",
-      width: "100%", // Asegura que ocupe todo el ancho disponible
+      width: "100%",
     },
     formInput: {
-      flex: "1", // Hace que el input ocupe todo el espacio disponible
+      flex: "1",
       padding: "0.6rem",
       borderRadius: "5px",
       border: "none",
@@ -212,7 +228,7 @@ const RecipeCreator = () => {
       display: "flex",
       gap: "0.5rem",
       width: "100%",
-      alignItems: "center", // Alinea verticalmente los elementos
+      alignItems: "center",
     },
     tagInput: {
       flex: "1",
@@ -222,7 +238,6 @@ const RecipeCreator = () => {
       backgroundColor: "#4e525e",
       color: "#f1f1f1",
     },
-    // Modifica el estilo del botón para etiquetas para que sea consistente
     tagButton: {
       padding: "0.6rem 1rem",
       fontSize: "0.9rem",
@@ -233,7 +248,7 @@ const RecipeCreator = () => {
       border: "none",
       borderRadius: "10px",
       cursor: "pointer",
-      whiteSpace: "nowrap", // Evita que el texto del botón se divida en varias líneas
+      whiteSpace: "nowrap",
     },
   };
 
@@ -482,7 +497,7 @@ const RecipeCreator = () => {
                     <button
                       type="button"
                       onClick={() => removeStep(index)}
-                      style={{ ...styles.button }}
+                      style={{ ...styles.buttonStyle, ...styles.cancelButton }}
                     >
                       Eliminar
                     </button>
@@ -493,7 +508,9 @@ const RecipeCreator = () => {
                 <button
                   type="button"
                   onClick={addStep}
-                  style={{ ...styles.button }}
+                  style={{ ...styles.button, ...(hoveredItem === 0 ? styles.hoveredButton : {}) }}
+                  onMouseEnter={() => handleMouseEnter(0)}
+                  onMouseLeave={handleMouseLeave}
                 >
                   Añadir paso
                 </button>
@@ -538,7 +555,7 @@ const RecipeCreator = () => {
                     <button
                       type="button"
                       onClick={() => removeIngredient(index)}
-                      style={{ ...styles.button }}
+                      style={{ ...styles.buttonStyle, ...styles.cancelButton }}
                     >
                       Eliminar
                     </button>
@@ -549,7 +566,9 @@ const RecipeCreator = () => {
                 <button
                   type="button"
                   onClick={addIngredient}
-                  style={{ ...styles.button }}
+                  style={{ ...styles.button, ...(hoveredItem === 1 ? styles.hoveredButton : {}) }}
+                  onMouseEnter={() => handleMouseEnter(1)}
+                  onMouseLeave={handleMouseLeave}
                 >
                   Añadir ingrediente
                 </button>
@@ -574,7 +593,9 @@ const RecipeCreator = () => {
                 <button
                   type="button"
                   onClick={handleTagAdd}
-                  style={styles.tagButton}
+                  style={{ ...styles.tagButton, ...(hoveredItem === 2 ? styles.hoveredButton : {}) }}
+                  onMouseEnter={() => handleMouseEnter(2)}
+                  onMouseLeave={handleMouseLeave}
                 >
                   Añadir etiqueta
                 </button>
@@ -626,7 +647,9 @@ const RecipeCreator = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                style={{ ...styles.buttonStyle }}
+                style={{ ...styles.buttonStyle, ...(hoveredItem === 3 ? styles.hoveredButton : {}) }}
+                onMouseEnter={() => handleMouseEnter(3)}  
+                onMouseLeave={handleMouseLeave}
               >
                 {isSubmitting ? "Creando receta..." : "Crear receta"}
               </button>
