@@ -72,7 +72,7 @@ const RecipeCreator = () => {
       fontWeight: "bold",
     },
     input: {
-      width: "100%",
+      width: "98%",
       padding: "0.6rem",
       borderRadius: "5px",
       border: "none",
@@ -81,7 +81,7 @@ const RecipeCreator = () => {
       marginBottom: "0.5rem",
     },
     textarea: {
-      width: "100%",
+      width: "98%",
       padding: "0.6rem",
       borderRadius: "5px",
       border: "none",
