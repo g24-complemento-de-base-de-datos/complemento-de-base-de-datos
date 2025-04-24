@@ -432,7 +432,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
             onMouseEnter={(e) => e.target.style.backgroundColor = '#e60000'}
             onMouseLeave={(e) => e.target.style.backgroundColor = '#ff4d4d'}
           >
-            🗑️ Eliminar receta
+            Eliminar receta
           </button>
         </div>
       )}

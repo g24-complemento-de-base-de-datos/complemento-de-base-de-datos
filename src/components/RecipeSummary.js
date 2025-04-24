@@ -5,6 +5,14 @@ import defaultDish from "./../static/dish.png";
 
 const RecipeSummary = ({ recipe }) => {
   const navigate = useNavigate();
+  const formatDuration = (minutes) => {
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins > 0 ? `${mins}min` : ''}`.trim();
+  };
 
   const handleClick = () => {
     navigate(`/recipes/${recipe.id}`, {
@@ -67,12 +75,23 @@ const RecipeSummary = ({ recipe }) => {
       margin: "0 0 10px 0",
       fontSize: "1.2rem",
       color: "#333",
+      height: "60px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      textAlign: "center",
     },
     description: {
       margin: "0 0 15px 0",
       color: "#666",
       fontSize: "0.9rem",
       flexGrow: 1,
+      height: "80px",
+      overflow: "hidden",
+      display: "-webkit-box",
+      WebkitLineClamp: "4",
+      WebkitBoxOrient: "vertical",
+      lineHeight: "1.4",
     },
     meta: {
       display: "flex",
@@ -82,25 +101,37 @@ const RecipeSummary = ({ recipe }) => {
     },
     duration: {
       fontSize: "0.85rem",
-      color: "#888",
+      fontWeight: "bold",
+      color: "#3c2f2f",
       display: "flex",
       alignItems: "center",
     },
     tags: {
       display: "flex",
       flexWrap: "wrap",
-      gap: "5px",
+      gap: "5px"
     },
     tag: {
-      background: "#f0f0f0",
-      color: "#555",
+      background: "#fbb540",
+      color: "#3c2f2f",
+      fontSize: "0.75rem",
+      fontWeight: "bold",
       padding: "3px 8px",
       borderRadius: "12px",
-      fontSize: "0.75rem",
     },
+    moreTags: {
+      color: "#888",
+      marginLeft: "3px",
+      marginTop: "2px",
+      fontWeight: "bold",
+      fontSize: "0.9rem",
+    }
   };
 
   const [isHovered, setIsHovered] = React.useState(false);
+  const tags = recipe.tags || [];
+  const visibleTags = tags.slice(0, 2);
+  const hasMoreTags = tags.length > 2;
 
   return (
     <div
@@ -130,20 +161,39 @@ const RecipeSummary = ({ recipe }) => {
       <div style={styles.content}>
         <h3 style={styles.name}>{recipe.name}</h3>
         <p style={styles.description}>
-          {recipe.description.length > 150
+          {recipe.description && recipe.description.length > 150
             ? `${recipe.description.substring(0, 150)}...`
-            : recipe.description}
+            : recipe.description || "Sin descripción"}
         </p>
         <div style={styles.meta}>
-          <span style={styles.duration}>⏱️ {recipe.duration} min</span>
-
-          {recipe.tags && recipe.tags.length > 0 && (
+          <span style={styles.duration}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#3c2f2f"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ marginRight: "4px" }}
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            {formatDuration(recipe.duration || 0)}
+          </span>
+          {tags.length > 0 && (
             <div style={styles.tags}>
-              {recipe.tags.map((tag, index) => (
+              {visibleTags.map((tag, index) => (
                 <span key={index} style={styles.tag}>
                   #{tag}
                 </span>
               ))}
+              {hasMoreTags && (
+                <span style={styles.moreTags}>+{tags.length - 2}</span>
+              )}
             </div>
           )}
         </div>
@@ -158,7 +208,7 @@ RecipeSummary.propTypes = {
     name: PropTypes.string.isRequired,
     description: PropTypes.string,
     duration: PropTypes.number,
-    image: PropTypes.string,
+    photoURL: PropTypes.string,
     tags: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
 };

@@ -73,7 +73,7 @@ const Recipes = () => {
       display: 'flex',
       justifyContent: 'center',
       gap: '10px',
-      marginBottom: '1rem',
+      marginBottom: '2rem',
       flexWrap: 'wrap'
     },
     searchInput: {
