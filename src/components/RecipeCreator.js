@@ -168,6 +168,7 @@ const RecipeCreator = () => {
       padding: "0.3rem 0.6rem",
       borderRadius: "15px",
       margin: "0.3rem",
+      marginTop: "0.5rem",
       fontSize: "0.9rem",
       fontWeight: "bold",
     },
@@ -197,6 +198,7 @@ const RecipeCreator = () => {
       width: "180px",
       objectFit: "cover",
       borderRadius: "8px",
+      cursor: "pointer",
     },
     editImage: {
       height: "250px",
@@ -355,7 +357,7 @@ const RecipeCreator = () => {
     try {
       const storageRef = ref(
         storage,
-        `images/${uid}/recipes/${formData.name}`
+        `images/${uid}/recipes/${formData.name.trim()}`
       );
       const uploadTask = uploadBytes(storageRef, file);
 
@@ -654,7 +656,7 @@ const RecipeCreator = () => {
             <div style={{ ...styles.formGroup, paddingTop: "1rem" }}>
               <label style={styles.uploadLabel}>Imagen</label>
               <div style={styles.imageContainer}>
-                <label htmlFor="profileImage">
+                <label htmlFor="recipeImage">
                   <img
                     src={imagePreview ? imagePreview : defaultDish}
                     alt="Foto de perfil"

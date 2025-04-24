@@ -10,44 +10,94 @@ const Recipes = () => {
   const [recipes, setRecipes] = useState([]);
   const [user, setUser] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showMineOnly, setShowMineOnly] = useState(false);
-  const [showSavedOnly, setShowSavedOnly]= useState(false);
+  const [viewMode, setViewMode] = useState('all'); // 'all', 'mine', 'saved'
   const [currentUserUid, setCurrentUserUid] = useState(null);
   const location = useLocation();
   const [showNotification, setShowNotification] = useState(false);
+  const [buttonHovers, setButtonHovers] = useState({
+    all: false,
+    mine: false,
+    saved: false
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [maxDuration, setMaxDuration] = useState('');
 
   const styles = {
-  containerStyle: {
-    backgroundColor: '#282c34',
-    color: '#f1f1f1',
-    padding: '2rem'
-  },
-listStyles: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: '20px',
-    maxWidth: '1400px',
-    margin: '0 auto'
-  },
-checkboxContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: '2rem',
-  },
-checkboxLabel: {
-    color: '#fbb540',
-    fontSize: '1.1rem',
-    marginLeft: '0.5rem',
-    cursor: 'pointer',
-  },
-checkboxInput: {
-    width: '18px',
-    height: '18px',
-    accentColor: '#fbb540',
-    cursor: 'pointer',
-  },
+    containerStyle: {
+      backgroundColor: '#282c34',
+      color: '#f1f1f1',
+      padding: '2rem'
+    },
+    listStyles: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      gap: '20px',
+      maxWidth: '1400px',
+      margin: '0 auto'
+    },
+    buttonsContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      gap: '20px',
+      marginBottom: '1rem',
+      flexWrap: 'wrap'
+    },
+    buttonStyle: (isActive, hover) => ({
+      padding: "0.6rem 1.2rem",
+      fontSize: "1.1rem",
+      fontWeight: "bold",
+      fontFamily: "Courier New",
+      backgroundColor: isActive 
+        ? (hover ? "#ea9d2d" : "#fbb540") 
+        : (hover ? "#666" : "#444"),
+      color: isActive ? "#3c2f2f" : "#f1f1f1",
+      border: "none",
+      borderRadius: "10px",
+      cursor: "pointer",
+      transition: "background-color 0.3s ease, transform 0.2s ease",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      transform: hover ? "translateY(-3px)" : "translateY(0)",
+    }),
+    notificationStyle: {
+      position: 'fixed',
+      top: '20px',
+      right: '20px',
+      backgroundColor: '#4CAF50',
+      color: 'white',
+      padding: '15px',
+      borderRadius: '5px',
+      zIndex: 1000
+    },
+    searchContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      gap: '10px',
+      marginBottom: '1rem',
+      flexWrap: 'wrap'
+    },
+    searchInput: {
+      padding: '0.6rem',
+      borderRadius: '10px',
+      border: 'none',
+      backgroundColor: '#4e525e',
+      color: '#f1f1f1',
+      minWidth: '250px'
+    },
+    durationInput: {
+      padding: '0.6rem',
+      borderRadius: '10px',
+      border: 'none',
+      backgroundColor: '#4e525e',
+      color: '#f1f1f1',
+      width: '250px'
+    },
+    counterText: {
+      textAlign: 'center',
+      marginTop: '2rem',
+      marginBottom: '2rem',
+      color: '#f1f1f1'
+    }
   };
 
   useEffect(() => {
@@ -115,54 +165,104 @@ checkboxInput: {
     }
   }, [location.state]);
   
-  let filteredRecipes = [];
-  
-  if (showMineOnly) {
-    filteredRecipes = recipes.filter(recipe => recipe.autorUid === currentUserUid);
-  } else if (showSavedOnly) {
-    const savedRecipeIds = user.recetasGuardadas?.map(receta => receta.id) || [];
-    filteredRecipes = recipes.filter(recipe => savedRecipeIds.includes(recipe.id));
-  } else {
-    filteredRecipes = recipes;
-  }
+  const filterRecipes = () => {
+    let filteredRecipes = [];
+    
+    switch(viewMode) {
+      case 'mine':
+        filteredRecipes = recipes.filter(recipe => recipe.autorUid === currentUserUid);
+        break;
+      case 'saved':
+        const savedRecipeIds = user.recetasGuardadas?.map(receta => receta.id) || [];
+        filteredRecipes = recipes.filter(recipe => savedRecipeIds.includes(recipe.id));
+        break;
+      default:
+        filteredRecipes = recipes;
+    }
+    
+    if (searchTerm) {
+      filteredRecipes = filteredRecipes.filter(recipe => 
+        recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (maxDuration) {
+      filteredRecipes = filteredRecipes.filter(recipe => 
+        recipe.duration <= parseInt(maxDuration)
+      );
+    }
+    
+    return filteredRecipes;
+  };
+
+  const filteredRecipes = filterRecipes();
+
+  const handleButtonHover = (button, isHovering) => {
+    setButtonHovers(prev => ({
+      ...prev,
+      [button]: isHovering
+    }));
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <div>
       <Navbar />
       <div style={styles.containerStyle}>
-      <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#fbb540' }}>
-        {showMineOnly ? 'Mis Recetas' : 'Todas las Recetas'}{' '}
-        <span style={{ fontSize: '1rem', color: '#ccc' }}>
-          ({filteredRecipes.length} receta{filteredRecipes.length !== 1 ? 's' : ''})
-        </span>
-      </h1>
+        <div style={styles.buttonsContainer}>
+          <button
+            style={styles.buttonStyle(viewMode === 'all', buttonHovers.all)}
+            onClick={() => setViewMode('all')}
+            onMouseEnter={() => handleButtonHover('all', true)}
+            onMouseLeave={() => handleButtonHover('all', false)}
+          >
+            Todas las recetas
+          </button>
+          
+          <button
+            style={styles.buttonStyle(viewMode === 'mine', buttonHovers.mine)}
+            onClick={() => setViewMode('mine')}
+            onMouseEnter={() => handleButtonHover('mine', true)}
+            onMouseLeave={() => handleButtonHover('mine', false)}
+            disabled={!currentUserUid}
+          >
+            Mis recetas
+          </button>
+          
+          <button
+            style={styles.buttonStyle(viewMode === 'saved', buttonHovers.saved)}
+            onClick={() => setViewMode('saved')}
+            onMouseEnter={() => handleButtonHover('saved', true)}
+            onMouseLeave={() => handleButtonHover('saved', false)}
+            disabled={!currentUserUid}
+          >
+            Recetas guardadas
+          </button>
+        </div>
 
-        <div style={{display: "flex", justifyContent: "center"}}>
-        <div style={styles.checkboxContainer}>
+        <div style={styles.counterText}>
+          Mostrando {filteredRecipes.length} receta{filteredRecipes.length !== 1 ? 's' : ''}
+        </div>
+
+        <form onSubmit={handleSearch} style={styles.searchContainer}>
           <input
-            type="checkbox"
-            id="mineOnly"
-            checked={showMineOnly}
-            onChange={() => setShowMineOnly(prev => !prev)}
-            style={styles.checkboxInput}
+            type="text"
+            placeholder="Buscar por nombre..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={styles.searchInput}
           />
-          <label htmlFor="mineOnly" style={styles.checkboxLabel}>
-            Mostrar solo mis recetas
-          </label>
-        </div>
-        <div style={{...styles.checkboxContainer, paddingLeft: "1rem"}}>
           <input
-            type="checkbox"
-            id="savedOnly"
-            checked={showSavedOnly}
-            onChange={() => setShowSavedOnly(prev => !prev)}
-            style={styles.checkboxInput}
+            type="text"
+            placeholder="Duración máxima en minutos"
+            value={maxDuration}
+            onChange={(e) => setMaxDuration(e.target.value)}
+            style={styles.durationInput}
           />
-          <label htmlFor="savedOnly" style={styles.checkboxLabel}>
-            Mostrar las recetas guardadas
-          </label>
-        </div>
-        </div>
+        </form>
 
         {loading ? (
           <div>Cargando recetas...</div>
