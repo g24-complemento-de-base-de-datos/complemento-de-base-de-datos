@@ -37,7 +37,7 @@ function App() {
       setIsAuthenticated(user);
       if (user) {
         const data = await getUserName(auth.currentUser.uid);
-        setUserName(data.nombre);
+        setUserName(data.name);
       }
     });
 

@@ -36,12 +36,12 @@ function Login() {
         }
 
         await setDoc(userRef, {
-          nombre: name,
-          apellido: surname,
+          name: name,
+          surname: surname,
           uid: user.uid,
           email: user.email,
           photoURL: user.photoURL,
-          recetasGuardadas: []
+          savedRecipes: []
         });
       }
 

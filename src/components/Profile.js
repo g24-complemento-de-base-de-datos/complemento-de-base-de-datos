@@ -48,8 +48,8 @@ function Login() {
           if (data) {
             setProfile(data);
             setFormData({
-              nombre: data.nombre || "",
-              apellido: data.apellido || "",
+              nombre: data.name || "",
+              apellido: data.surname || "",
               email: data.email || "",
             });
             if (data.photoURL) {
@@ -337,7 +337,7 @@ function Login() {
                 <input
                   type="text"
                   name="nombre"
-                  value={formData.nombre}
+                  value={formData.name}
                   onChange={handleInputChange}
                   style={styles.input}
                 />
@@ -347,7 +347,7 @@ function Login() {
                 <input
                   type="text"
                   name="apellido"
-                  value={formData.apellido}
+                  value={formData.surname}
                   onChange={handleInputChange}
                   style={styles.input}
                 />
@@ -385,11 +385,11 @@ function Login() {
             </div>
             <div style={{ ...styles.profileField, paddingTop: "1.5rem" }}>
               <strong style={styles.profileLabel}>Nombre:</strong>
-              <p style={styles.profileValue}>{profile.nombre}</p>
+              <p style={styles.profileValue}>{profile.name}</p>
             </div>
             <div style={styles.profileField}>
               <strong style={styles.profileLabel}>Apellidos:</strong>
-              <p style={styles.profileValue}>{profile.apellido}</p>
+              <p style={styles.profileValue}>{profile.surname}</p>
             </div>
             <div style={{ ...styles.profileField, paddingBottom: "1.5rem" }}>
               <strong style={styles.profileLabel}>Email:</strong>
