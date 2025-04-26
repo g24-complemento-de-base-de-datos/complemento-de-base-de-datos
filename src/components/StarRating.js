@@ -1,6 +1,5 @@
-// components/StarRating.jsx
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 const StarRating = ({ rating, max = 5 }) => {
   const filledStars = Math.round(rating);
