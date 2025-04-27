@@ -45,32 +45,61 @@ const AboutUs = () => {
         title: {
             fontWeight: "bold",
             color: "#fbb540",
-            fontSize: "2rem",
-            marginBottom: "1.5rem",
+            fontSize: "2.5rem",
+            marginBottom: "2rem",
         },
         subtitle: {
             fontWeight: "bold",
             color: "#fbb540",
-            fontSize: "1.5rem",
-            margin: "2rem 0 1rem",
+            fontSize: "1.8rem",
+            margin: "3rem 0 1.5rem",
+            textAlign: "center",
         },
         paragraph: {
             marginBottom: "1.5rem",
             lineHeight: "1.6",
             textAlign: "left",
-            maxWidth: "80%",
-            margin: "0 auto 1.5rem",
+            maxWidth: "100%",
+            margin: "0 auto 2rem",
+            fontSize: "1.1rem",
         },
         techList: {
-            textAlign: "left",
-            maxWidth: "70%",
-            margin: "0 auto 2rem",
-            lineHeight: "1.8",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "2rem",
+            maxWidth: "90%",
+            margin: "0 auto 3rem",
+        },
+        techItem: {
+            backgroundColor: "#3a3f4b",
+            borderRadius: "15px",
+            padding: "1.5rem",
+            textAlign: "center",
+            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+            transition: "transform 0.3s ease",
+            '&:hover': {
+                transform: "translateY(-5px)",
+            }
+        },
+        techIcon: {
+            fontSize: "3rem",
+            color: "#fbb540",
+            marginBottom: "1rem",
+        },
+        techTitle: {
+            fontWeight: "bold",
+            color: "#fbb540",
+            fontSize: "1.3rem",
+            marginBottom: "0.8rem",
+        },
+        techDescription: {
+            fontSize: "1rem",
+            lineHeight: "1.5",
         },
         teamContainer: {
             display: "flex",
             justifyContent: "center",
-            gap: "4rem",
+            gap: "6rem",
             marginTop: "3rem",
             flexWrap: "wrap",
         },
@@ -81,14 +110,15 @@ const AboutUs = () => {
             gap: "0.5rem",
         },
         memberImage: {
-            height: "250px",
-            width: "250px",
+            height: "350px",
+            width: "350px",
             borderRadius: "50%",
             objectFit: "cover",
             border: "3px solid #fbb540",
+            boxShadow: "0 4px 15px rgba(251, 181, 64, 0.3)",
         },
         memberName: {
-            fontSize: "1.4rem",
+            fontSize: "1.5rem",
             fontWeight: "bold",
             color: "#fbb540",
             marginTop: "1.5rem",
@@ -98,6 +128,17 @@ const AboutUs = () => {
             fontWeight: "bold",
             fontSize: "1.2rem",
             color: "#f1f1f1",
+            backgroundColor: "#3a3f4b",
+            padding: "0.5rem 1rem",
+            borderRadius: "20px",
+        },
+        highlightBox: {
+            backgroundColor: "#3a3f4b",
+            borderRadius: "15px",
+            padding: "2rem",
+            margin: "3rem auto",
+            maxWidth: "80%",
+            borderLeft: "5px solid #fbb540",
         }
     };
 
@@ -118,9 +159,10 @@ const AboutUs = () => {
             <div style={styles.container}>
                 <h1 style={styles.title}>Sobre Mi Recetario</h1>
                 
+                <div style={styles.highlightBox}>
                 <p style={styles.paragraph}>
                     Esta aplicación forma parte del proyecto final de la asignatura "Complemento de Base de Datos",
-                    cursada en el último año del Grado en Ingeniería Informática.
+                    cursada en el último año del Grado en Ingeniería Informática Ingeniería del Software en la Universidad de Sevilla.
                 </p>
                 
                 <p style={styles.paragraph}>
@@ -128,19 +170,44 @@ const AboutUs = () => {
                     permitiendo a los usuarios registrarse, iniciar sesión, subir recetas con imágenes y consultar 
                     recetas de otros usuarios.
                 </p>
-                
-                <h3 style={{ ...styles.subtitle, marginTop: "3rem"}}>Tecnologías utilizadas:</h3>
-                <ul style={styles.techList}>
-                    <li>Frontend desarrollado con React.js</li>
-                    <li>Firebase Authentication para la gestión segura del registro e inicio de sesión de usuarios</li>
-                    <li>Cloud Firestore (Firebase) como base de datos NoSQL para almacenar la información estructurada de las recetas</li>
-                    <li>Firebase Storage para el almacenamiento de imágenes de las recetas</li>
-                </ul>
-                
-                <p style={{ ...styles.paragraph, marginTop: "5rem" }}>
-                    El objetivo principal es integrar una base de datos moderna en una aplicación funcional, aplicar prácticas de ingeniería de software,
-                    y demostrar conocimientos de diseño de sistemas de información y bases de datos NoSQL en un entorno de desarrollo web real.
-                </p>
+                </div>
+                <h3 style={styles.subtitle}>Tecnologías utilizadas</h3>
+                <div style={styles.techList}>
+                    <div style={styles.techItem}>
+                        <div style={styles.techIcon}>⚛️</div>
+                        <h4 style={styles.techTitle}>React.js</h4>
+                        <p style={styles.techDescription}>
+                            Biblioteca JavaScript para construir interfaces de usuario modernas y reactivas
+                        </p>
+                    </div>
+                    <div style={styles.techItem}>
+                        <div style={styles.techIcon}>🔐</div>
+                        <h4 style={styles.techTitle}>Firebase Auth</h4>
+                        <p style={styles.techDescription}>
+                            Autenticación segura a través de Google y gestión de usuarios
+                        </p>
+                    </div>
+                    <div style={styles.techItem}>
+                        <div style={styles.techIcon}>🔥</div>
+                        <h4 style={styles.techTitle}>Cloud Firestore</h4>
+                        <p style={styles.techDescription}>
+                            Base de datos NoSQL en tiempo real para almacenar todas las recetas
+                        </p>
+                    </div>
+                    <div style={styles.techItem}>
+                        <div style={styles.techIcon}>📦</div>
+                        <h4 style={styles.techTitle}>Firebase Storage</h4>
+                        <p style={styles.techDescription}>
+                            Almacenamiento seguro de imágenes y archivos multimedia
+                        </p>
+                    </div>
+                </div>
+                <div style={styles.highlightBox}>
+                    <p style={{...styles.paragraph, margin: 0, textAlign: "center"}}>
+                        El objetivo principal es integrar una base de datos moderna en una aplicación funcional, aplicar las prácticas aprendidas en la asignatura,
+                        y demostrar conocimientos de diseño de sistemas de información y bases de datos NoSQL en un entorno de desarrollo web real.
+                    </p>
+                </div>
                 
                 <h3 style={styles.subtitle}>Equipo de desarrollo</h3>
                 <div style={styles.teamContainer}>
