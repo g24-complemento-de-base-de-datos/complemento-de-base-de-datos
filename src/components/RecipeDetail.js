@@ -24,12 +24,16 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
   const [averageRating, setAverageRating] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [isRecipeSaved, setIsRecipeSaved] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   const formatDuration = (minutes) => {
     if (minutes < 60) return `${minutes} min`;
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return `${hours}h ${remainingMinutes > 0 ? `${remainingMinutes}min` : ''}`.trim();
+    return `${hours}h ${
+      remainingMinutes > 0 ? `${remainingMinutes}min` : ""
+    }`.trim();
   };
 
   useEffect(() => {
@@ -79,33 +83,33 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       transform: "translateY(0)",
     },
     backButton: {
-      '&:hover': {
-        backgroundColor: "#e6ac00"
-      }
+      "&:hover": {
+        backgroundColor: "#e6ac00",
+      },
     },
     saveButton: {
       backgroundColor: "#4CAF50",
       color: "white",
-      '&:hover': {
-        backgroundColor: "#45a049"
-      }
+      "&:hover": {
+        backgroundColor: "#45a049",
+      },
     },
     loginButton: {
-      '&:hover': {
-        backgroundColor: "#e6ac00"
-      }
+      "&:hover": {
+        backgroundColor: "#e6ac00",
+      },
     },
     ratingButton: {
-      '&:hover': {
-        backgroundColor: "#e6ac00"
-      }
+      "&:hover": {
+        backgroundColor: "#e6ac00",
+      },
     },
     deleteButton: {
       backgroundColor: "#d12a37",
       color: "white",
-      '&:hover': {
-        backgroundColor: "#961b20"
-      }
+      "&:hover": {
+        backgroundColor: "#961b20",
+      },
     },
     hoveredButton: {
       transform: "translateY(-3px)",
@@ -195,7 +199,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
     creatorInfo: {
       display: "flex",
       alignItems: "center",
-      justifyContent: 'space-between',
+      justifyContent: "space-between",
       marginTop: "2rem",
       paddingTop: "1rem",
       borderTop: "1px solid #4e525e",
@@ -206,6 +210,21 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       borderRadius: "50%",
       marginRight: "1rem",
       objectFit: "cover",
+    },
+    notificationStyle: {
+      position: "fixed",
+      top: "40px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      backgroundColor: "green",
+      color: "#f1f1f1",
+      fontSize: "1.2rem",
+      fontWeight: "bold",
+      padding: "12px 24px",
+      borderRadius: "15px",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      zIndex: 1000,
+      animation: "fadeInOut 3s ease-in-out",
     },
   };
 
@@ -219,7 +238,9 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
 
         if (userSnap.exists()) {
           const savedRecipes = userSnap.data().savedRecipes || [];
-          const alreadySaved = savedRecipes.some((savedRecipe) => savedRecipe.id === recipe.id);
+          const alreadySaved = savedRecipes.some(
+            (savedRecipe) => savedRecipe.id === recipe.id
+          );
           setIsRecipeSaved(alreadySaved);
         }
       } catch (error) {
@@ -293,6 +314,17 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
     fetchRatings();
   }, [recipe?.id]);
 
+  const showSuccessNotification = (message) => {
+    setNotificationMessage(message);
+    setShowNotification(true);
+
+    const timer = setTimeout(() => {
+      setShowNotification(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  };
+
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
       "¿Estás seguro de que quieres eliminar esta receta y todas sus valoraciones?"
@@ -313,11 +345,11 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       );
       await Promise.all(deletePromises);
 
-      alert("Receta y valoraciones eliminadas con éxito.");
+      showSuccessNotification("Receta y valoraciones eliminadas con éxito");
       navigate("/recipes");
     } catch (error) {
       console.error("Error eliminando receta o valoraciones:", error);
-      alert("Hubo un problema al eliminar la receta o sus valoraciones.");
+      showSuccessNotification("Hubo un problema al eliminar la receta");
     }
   };
 
@@ -327,13 +359,15 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
 
   const handleSave = async () => {
     if (!auth.currentUser) {
-      alert("Debes iniciar sesión para guardar recetas");
+      showSuccessNotification("Debes iniciar sesión para guardar recetas");
       navigate("/login");
       return;
     }
 
     if (!recipe) {
-      alert("No se puede guardar esta receta: ID no disponible");
+      showSuccessNotification(
+        "No se puede guardar esta receta: ID no disponible"
+      );
       return;
     }
 
@@ -342,7 +376,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       const userDoc = await getDoc(userRef);
 
       if (!userDoc.exists()) {
-        alert("No se encontró tu perfil de usuario");
+        showSuccessNotification("No se encontró tu perfil de usuario");
         return;
       }
 
@@ -352,7 +386,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       );
 
       if (isAlreadySaved) {
-        alert("Esta receta ya está guardada en tu perfil");
+        showSuccessNotification("Esta receta ya está guardada en tu perfil");
         return;
       }
 
@@ -363,10 +397,10 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       });
 
       setIsRecipeSaved(true);
-      alert("Receta guardada con éxito en tu perfil");
+      showSuccessNotification("Receta guardada con éxito en tu perfil");
     } catch (error) {
       console.error("Error al guardar la receta:", error);
-      alert("Hubo un problema al guardar la receta. Por favor, inténtalo de nuevo.");
+      showSuccessNotification("Hubo un problema al guardar la receta");
     }
   };
 
@@ -375,13 +409,13 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       <div style={styles.outerContainer}>
         <Navbar />
         <div style={styles.container}>
-          <button 
-            onClick={handleBack} 
+          <button
+            onClick={handleBack}
             style={{
               ...styles.buttonStyle,
               ...styles.backButton,
-              display: 'flex',
-              alignItems: 'center'
+              display: "flex",
+              alignItems: "center",
             }}
             onMouseEnter={(e) => {
               e.target.style.transform = "translateY(-3px)";
@@ -395,10 +429,12 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
             }}
           >
             <svg
-              width="16"
-              height="16"
+              width="18"
+              height="18"
+              fontSize="1.5rem"
+              fontStyle="bold"
               viewBox="0 0 24 24"
-              fill="currentColor"
+              fill="auto"
               style={{ verticalAlign: "middle", marginRight: "8px" }}
             >
               <path d="M15 18l-6-6 6-6" />
@@ -416,7 +452,6 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       <Navbar />
       <div style={styles.container}>
         <div style={styles.buttonContainer}>
-          {/* Botón Volver */}
           <button
             onClick={handleBack}
             style={{ ...styles.buttonStyle, ...styles.backButton }}
@@ -431,6 +466,17 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
               e.target.style.backgroundColor = "#fbb540";
             }}
           >
+            <svg
+              width="18"
+              height="18"
+              fontSize="1.5rem"
+              fontStyle="bold"
+              viewBox="0 0 24 24"
+              fill="auto"
+              style={{ verticalAlign: "middle", marginRight: "8px" }}
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
             Volver a todas las recetas
           </button>
 
@@ -441,7 +487,11 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
               style={{
                 ...styles.buttonStyle,
                 ...(isRecipeSaved
-                  ? { backgroundColor: "grey", color: "#f1f1f1", cursor: "not-allowed" }
+                  ? {
+                      backgroundColor: "grey",
+                      color: "#f1f1f1",
+                      cursor: "not-allowed",
+                    }
                   : styles.saveButton),
               }}
               onMouseEnter={(e) => {
@@ -483,18 +533,29 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
             </button>
           )}
         </div>
-  
+
         <div style={styles.header}>
           <h1 style={styles.title}>{recipe.name}</h1>
-          
-          <div style={{ ...styles.meta, ...styles.ratingContainer, marginBottom: "0.5rem" }}>
-            
+
+          <div
+            style={{
+              ...styles.meta,
+              ...styles.ratingContainer,
+              marginBottom: "0.5rem",
+            }}
+          >
             <span>Duración: {formatDuration(recipe.duration)}</span>
-            <span>{averageRating ? `⭐ ${averageRating}` : "Sin valoraciones"}</span>
-            
+            <span>
+              {averageRating ? `⭐ ${averageRating}` : "Sin valoraciones"}
+            </span>
+
             {currentUser && (
               <button
-                onClick={() => navigate(`/recipes/${recipe.id}/ratings`, { state: { recipe } })}
+                onClick={() =>
+                  navigate(`/recipes/${recipe.id}/ratings`, {
+                    state: { recipe },
+                  })
+                }
                 style={{
                   ...styles.buttonStyle,
                   ...styles.ratingButton,
@@ -514,30 +575,37 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
               </button>
             )}
           </div>
-  
+
           {recipe.photoURL && (
             <img
               src={recipe.photoURL}
               alt={recipe.name}
               style={styles.image}
               onError={(e) => {
-                e.target.src = "https://via.placeholder.com/800x400?text=Imagen+no+disponible";
+                e.target.src =
+                  "https://via.placeholder.com/800x400?text=Imagen+no+disponible";
               }}
             />
           )}
         </div>
-  
+
         <div style={styles.section}>
           <h2 style={styles.sectionTitle}>Descripción</h2>
           <p style={{ lineHeight: "1.6" }}>{recipe.description}</p>
         </div>
-  
+
         <div style={styles.section}>
-          <h2 style={{ ...styles.sectionTitle}}>Ingredientes</h2>
+          <h2 style={{ ...styles.sectionTitle }}>Ingredientes</h2>
           <div style={styles.ingredientList}>
             {recipe.ingredients.map((ingredient, index) => (
               <div key={index} style={styles.ingredientItem}>
-                <div style={{ fontWeight: "bold", marginBottom: "4px", color: "#fbb540" }}>
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    marginBottom: "4px",
+                    color: "#fbb540",
+                  }}
+                >
                   {ingredient.name}
                 </div>
                 <div style={{ marginBottom: "4px" }}>{ingredient.quantity}</div>
@@ -550,10 +618,12 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
             ))}
           </div>
         </div>
-  
+
         <div style={styles.section}>
           <h2 style={styles.sectionTitle}>Preparación</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
             {recipe.steps.map((step, index) => (
               <div key={index} style={styles.stepItem}>
                 <div style={styles.stepNumber}>{index + 1}</div>
@@ -562,7 +632,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
             ))}
           </div>
         </div>
-  
+
         {recipe.tags?.length > 0 && (
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>Etiquetas</h2>
@@ -575,10 +645,10 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
             </div>
           </div>
         )}
-  
+
         {(recipe.autorUid || recipe.surname) && (
           <div style={styles.creatorInfo}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
               {recipe.userPhoto && (
                 <img
                   src={recipe.userPhoto}
@@ -624,6 +694,9 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
           </div>
         )}
       </div>
+      {showNotification && (
+        <div style={styles.notificationStyle}>{notificationMessage}</div>
+      )}
     </div>
   );
 };
