@@ -337,7 +337,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       const updatedSavedRecipes = [...currentSavedRecipes, recipe];
 
       await updateDoc(userRef, {
-        recetasGuardadas: updatedSavedRecipes,
+        savedRecipes: updatedSavedRecipes,
       });
 
       alert("Receta guardada con éxito en tu perfil");
@@ -477,7 +477,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
           <div style={{ ...styles.meta, ...styles.ratingContainer, marginBottom: "0.5rem" }}>
             
             <span>Duración: {formatDuration(recipe.duration)}</span>
-            <span>{averageRating === null ? `⭐ ${averageRating}` : "Sin valoraciones"}</span>
+            <span>{averageRating ? `⭐ ${averageRating}` : "Sin valoraciones"}</span>
             
             {currentUser && (
               <button
@@ -497,7 +497,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
                   e.target.style.backgroundColor = "#fbb540";
                 }}
               >
-                Valorar
+                Valoraciones
               </button>
             )}
           </div>
