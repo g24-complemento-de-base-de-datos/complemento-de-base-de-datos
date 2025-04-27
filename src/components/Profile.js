@@ -12,8 +12,8 @@ function Login() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    nombre: "",
-    apellido: "",
+    name: "",
+    surname: "",
     email: "",
   });
   const [profileImage, setProfileImage] = useState(null);
@@ -48,8 +48,8 @@ function Login() {
           if (data) {
             setProfile(data);
             setFormData({
-              nombre: data.name || "",
-              apellido: data.surname || "",
+              name: data.name || "",
+              surname: data.surname || "",
               email: data.email || "",
             });
             if (data.photoURL) {
@@ -336,7 +336,7 @@ function Login() {
                 <strong>Nombre:</strong>
                 <input
                   type="text"
-                  name="nombre"
+                  name="name"
                   value={formData.name}
                   onChange={handleInputChange}
                   style={styles.input}
@@ -346,7 +346,7 @@ function Login() {
                 <strong>Apellidos:</strong>
                 <input
                   type="text"
-                  name="apellido"
+                  name="surname"
                   value={formData.surname}
                   onChange={handleInputChange}
                   style={styles.input}
