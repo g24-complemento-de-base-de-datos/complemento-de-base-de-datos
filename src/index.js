@@ -14,6 +14,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import RecipeDetail from './components/RecipeDetail';
 import RecipeRatings from './components/RecipeRatings';
+import AboutUs from './components/AboutUs';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -28,6 +29,7 @@ root.render(
         <Route path="/recipes/:id" element={<RecipeDetail />} />
         <Route path="/recipes/*" element={<Navigate to="/recipes" replace />} />
         <Route path="/recipes/:recipeId/ratings" element={<RecipeRatings />} />
+        <Route path="/about_us" element={<AboutUs />} />
       </Routes>
     </Router>
   </React.StrictMode>

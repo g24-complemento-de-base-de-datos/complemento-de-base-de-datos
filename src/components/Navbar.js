@@ -191,30 +191,32 @@ function Navbar() {
               alt="logo"
               style={styles.logo}
             />
-            <span style={{ 
-              ...styles.appName, 
-              ...(hoveredItem === 0 ? styles.navItemHover : {})}}
+            <span
+              style={{
+                ...styles.appName,
+                ...(hoveredItem === 0 ? styles.navItemHover : {}),
+              }}
               onMouseEnter={() => handleMouseEnter(0)}
               onMouseLeave={handleMouseLeave}
-              >
-              Mi recetario</span>
+            >
+              Mi recetario
+            </span>
           </Link>
         </div>
+
         <div style={styles.rightSection}>
           {isAuthenticated && (
-            <>
-              <Link
-                to="/new_recipe"
-                style={{
-                  ...styles.navItem,
-                  ...(hoveredItem === 1 ? styles.navItemHover : {})
-                }}
-                onMouseEnter={() => handleMouseEnter(1)}
-                onMouseLeave={handleMouseLeave}
-              >
-                Añadir receta
-              </Link>
-            </>
+            <Link
+              to="/new_recipe"
+              style={{
+                ...styles.navItem,
+                ...(hoveredItem === 1 ? styles.navItemHover : {}),
+              }}
+              onMouseEnter={() => handleMouseEnter(1)}
+              onMouseLeave={handleMouseLeave}
+            >
+              Añadir receta
+            </Link>
           )}
 
           <Link
@@ -228,48 +230,50 @@ function Navbar() {
           >
             Recetas
           </Link>
+
           {isAuthenticated && (
-            <>
-              <Link
-                to="/profile"
-                style={{
-                  ...styles.navItem,
-                  ...(hoveredItem === 3 ? styles.navItemHover : {}),
-                }}
-                onMouseEnter={() => handleMouseEnter(3)}
-                onMouseLeave={handleMouseLeave}
-              >
-                Perfil
-              </Link>
-            </>
+            <Link
+              to="/profile"
+              style={{
+                ...styles.navItem,
+                ...(hoveredItem === 3 ? styles.navItemHover : {}),
+              }}
+              onMouseEnter={() => handleMouseEnter(3)}
+              onMouseLeave={handleMouseLeave}
+            >
+              Perfil
+            </Link>
           )}
-          {isAuthenticated && (
-            <div style={styles.dropdownContainer}>
-              <span
-                style={{
-                  ...styles.navItem,
-                  ...(hoveredItem === 4 ? styles.navItemHover : {}),
-                }}
-                onClick={toggleDropdown}
-                onMouseEnter={() => handleMouseEnter(4)}
-                onMouseLeave={handleMouseLeave}
-              >
-                Más ▾
-              </span>
-              {dropdownOpen && (
-                <div style={styles.dropdown}>
-                  <>
-                    <Link
-                      to="/about_us"
-                      style={{
-                        ...styles.dropdownItem,
-                        ...(hoveredItem === 5 ? styles.dropdownItemHover : {}),
-                      }}
-                      onMouseEnter={() => handleMouseEnter(5)}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      Sobre nosotros
-                    </Link>
+
+          <div style={styles.dropdownContainer}>
+            <span
+              style={{
+                ...styles.navItem,
+                ...(hoveredItem === 4 ? styles.navItemHover : {}),
+              }}
+              onClick={toggleDropdown}
+              onMouseEnter={() => handleMouseEnter(4)}
+              onMouseLeave={handleMouseLeave}
+            >
+              Más ▾
+            </span>
+
+            {dropdownOpen && (
+              <div style={styles.dropdown}>
+                <>
+                  <Link
+                    to="/about_us"
+                    style={{
+                      ...styles.dropdownItem,
+                      ...(hoveredItem === 5 ? styles.dropdownItemHover : {}),
+                    }}
+                    onMouseEnter={() => handleMouseEnter(5)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    Sobre nosotros
+                  </Link>
+
+                  {isAuthenticated && (
                     <Link
                       style={{
                         ...styles.dropdownItem,
@@ -286,11 +290,11 @@ function Navbar() {
                     >
                       Cerrar sesión
                     </Link>
-                  </>
-                </div>
-              )}
-            </div>
-          )}
+                  )}
+                </>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
