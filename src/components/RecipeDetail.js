@@ -23,6 +23,7 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
   const [loadingCreator, setLoadingCreator] = useState(true);
   const [averageRating, setAverageRating] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isRecipeSaved, setIsRecipeSaved] = useState(false);
 
   const formatDuration = (minutes) => {
     if (minutes < 60) return `${minutes} min`;
@@ -209,6 +210,27 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
   };
 
   useEffect(() => {
+    const checkIfSaved = async () => {
+      if (!auth.currentUser || !recipe) return;
+
+      try {
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          const savedRecipes = userSnap.data().savedRecipes || [];
+          const alreadySaved = savedRecipes.some((savedRecipe) => savedRecipe.id === recipe.id);
+          setIsRecipeSaved(alreadySaved);
+        }
+      } catch (error) {
+        console.error("Error comprobando si la receta está guardada:", error);
+      }
+    };
+
+    checkIfSaved();
+  }, [currentUser, recipe]);
+
+  useEffect(() => {
     const fetchCreatorName = async () => {
       if (!recipe?.autorUid) {
         setLoadingCreator(false);
@@ -340,12 +362,11 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
         savedRecipes: updatedSavedRecipes,
       });
 
+      setIsRecipeSaved(true);
       alert("Receta guardada con éxito en tu perfil");
     } catch (error) {
       console.error("Error al guardar la receta:", error);
-      alert(
-        "Hubo un problema al guardar la receta. Por favor, inténtalo de nuevo."
-      );
+      alert("Hubo un problema al guardar la receta. Por favor, inténtalo de nuevo.");
     }
   };
 
@@ -395,58 +416,50 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
       <Navbar />
       <div style={styles.container}>
         <div style={styles.buttonContainer}>
-          <button 
-            onClick={handleBack} 
-            style={{
-              ...styles.buttonStyle,
-              ...styles.backButton,
-              display: 'flex',
-              alignItems: 'center'
-            }}
+          {/* Botón Volver */}
+          <button
+            onClick={handleBack}
+            style={{ ...styles.buttonStyle, ...styles.backButton }}
             onMouseEnter={(e) => {
               e.target.style.transform = "translateY(-3px)";
-              e.target.style.boxShadow = "0 6px 8px rgba(0, 0, 0, 0.15)";
+              e.target.style.boxShadow = "0 6px 8px rgba(0,0,0,0.15)";
               e.target.style.backgroundColor = "#ea9d2d";
             }}
             onMouseLeave={(e) => {
               e.target.style.transform = "translateY(0)";
-              e.target.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+              e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
               e.target.style.backgroundColor = "#fbb540";
             }}
           >
-            <svg
-              width="18"
-              height="18"
-              fontSize="1.5rem"
-              fontStyle="bold"
-              viewBox="0 0 24 24"
-              fill="auto"
-              style={{ verticalAlign: "middle", marginRight: "8px" }}
-            >
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
             Volver a todas las recetas
           </button>
-  
+
           {currentUser ? (
             <button
               onClick={handleSave}
+              disabled={isRecipeSaved}
               style={{
                 ...styles.buttonStyle,
-                ...styles.saveButton,
+                ...(isRecipeSaved
+                  ? { backgroundColor: "grey", color: "#f1f1f1", cursor: "not-allowed" }
+                  : styles.saveButton),
               }}
               onMouseEnter={(e) => {
-                e.target.style.transform = "translateY(-3px)";
-                e.target.style.boxShadow = "0 6px 8px rgba(0, 0, 0, 0.15)";
-                e.target.style.backgroundColor = "#006400";
+                if (!isRecipeSaved) {
+                  e.target.style.transform = "translateY(-3px)";
+                  e.target.style.boxShadow = "0 6px 8px rgba(0,0,0,0.15)";
+                  e.target.style.backgroundColor = "#006400";
+                }
               }}
               onMouseLeave={(e) => {
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
-                e.target.style.backgroundColor = "green";
+                if (!isRecipeSaved) {
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
+                  e.target.style.backgroundColor = "green";
+                }
               }}
             >
-              Guardar receta
+              {isRecipeSaved ? "Receta guardada" : "Guardar receta"}
             </button>
           ) : (
             <button
@@ -457,12 +470,12 @@ const RecipeDetail = ({ recipe: propRecipe }) => {
               }}
               onMouseEnter={(e) => {
                 e.target.style.transform = "translateY(-3px)";
-                e.target.style.boxShadow = "0 6px 8px rgba(0, 0, 0, 0.15)";
+                e.target.style.boxShadow = "0 6px 8px rgba(0,0,0,0.15)";
                 e.target.style.backgroundColor = "#ea9d2d";
               }}
               onMouseLeave={(e) => {
                 e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+                e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
                 e.target.style.backgroundColor = "#fbb540";
               }}
             >

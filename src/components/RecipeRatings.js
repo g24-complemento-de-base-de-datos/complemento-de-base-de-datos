@@ -46,12 +46,12 @@ const RecipeRatings = () => {
   const navigate = useNavigate();
   const recipe = location.state?.recipe;
   const [currentUser, setCurrentUser] = useState(null);
-
   const [ratings, setRatings] = useState([]);
   const [message, setMessage] = useState("");
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(5);
   const [loading, setLoading] = useState(true);
   const [isOwner, setIsOwner] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   const styles = {
     outerContainer: {
@@ -149,16 +149,28 @@ const RecipeRatings = () => {
       fontWeight: "bold",
       textAlign: "center",
       width: "60%",
-      justifyContent: "center",
       margin: "0 auto",
       fontSize: "1.4rem",
       fontFamily: "Courier New",
-      fontStyle: "bold",
     },
     userName: {
       fontWeight: "bold",
       marginBottom: "0.5rem",
       color: "#fbb540",
+    },
+    notificationStyle: {
+      position: "fixed",
+      top: "40px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      backgroundColor: "green",
+      color: "#f1f1f1",
+      fontSize: "1.5rem",
+      fontWeight: "bold",
+      padding: "15px 15px",
+      borderRadius: "15px",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      zIndex: 1000,
     },
   };
 
@@ -233,6 +245,13 @@ const RecipeRatings = () => {
       setMessage("");
       setScore(5);
       fetchRatings();
+
+      // Mostrar notificación de éxito
+      setShowNotification(true);
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
+      return () => clearTimeout(timer);
     } catch (error) {
       console.error("Error al enviar valoración:", error);
       alert(
@@ -289,18 +308,12 @@ const RecipeRatings = () => {
 
           {isOwner && (
             <div style={styles.ownerMessage}>
-              No puedes valorar tu propia recetas
+              No puedes valorar tu propia receta
             </div>
           )}
 
           {!isOwner && (
-            <form
-              onSubmit={handleSubmit}
-              style={{
-                ...styles.formGroup,
-                ...(isOwner ? styles.disabledForm : {}),
-              }}
-            >
+            <form onSubmit={handleSubmit} style={styles.formGroup}>
               <h2 style={{ color: "#fbb540", marginBottom: "1rem" }}>
                 Deja tu valoración
               </h2>
@@ -367,6 +380,12 @@ const RecipeRatings = () => {
           </div>
         </div>
       </div>
+
+      {showNotification && (
+        <div style={styles.notificationStyle}>
+          ¡Valoración enviada correctamente!
+        </div>
+      )}
     </div>
   );
 };
