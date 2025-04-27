@@ -39,7 +39,7 @@ const Recipes = () => {
       flexWrap: "wrap",
       justifyContent: "center",
       gap: "20px",
-      maxWidth: "1400px",
+      // maxWidth: "1900px",
       margin: "0 auto",
     },
     buttonsContainer: {
